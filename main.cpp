@@ -10,9 +10,9 @@ using namespace genv;
 #define width 510
 #define height 510
 #define ellenorzes gout << move_to(400,470) << color(255,255,255) << box(100,30) << move_to(410, 490) << color(0,0,0) << text("Ellenorzes");
-#define nyert gout << move_to(0,0) << color(0,255,0) << box(width,height) << move_to(width/2-65, height/2-18) << color(0,0,0) << text("Nyertel");
-#define veszt gout << move_to(0,0) << color(255,0,0) << box(width,height) << move_to(width/2-90, height/2-18) << color(0,0,0) << text("Vesztettel");
-#define kilep gout << move_to(width/2-85, height/2+40) << color(0,0,0) << box(160,60) << move_to(width/2-65, height/2+50) << color(255,255,60) << text("Kilepes");
+#define nyert gout << move_to(0,0) << color(0,255,0) << box(width,height) << move_to(225, 200) << color(0,0,0) << text("Nyertel");
+#define veszt gout << move_to(0,0) << color(255,0,0) << box(width,height) << move_to(215, 200) << color(0,0,0) << text("Vesztettel");
+#define kilep gout << move_to(175,225) << color(0,0,0) << box(160,60) << move_to(225, 250) << color(255,255,60) << text("Kilepes");
 
 int main()
 {
@@ -551,6 +551,7 @@ int main()
 
     int focus = -1;
     int indulas = 0;
+    bool kilepes = false;
 
     while(gin>>ev && indulas==0 && ev.keycode != key_escape)
     {
@@ -599,13 +600,38 @@ int main()
             w[i]->draw();
             sudokuvector[i/9][i%9] = w[i] -> getvalue();
         }
+        if(ev.button == btn_left && ev.pos_x>=400 && ev.pos_x<=500 && ev.pos_y>=470 && ev.pos_y<=500)
+        {
+            jame -> loadvector(sudokuvector, "kezdo.txt");
+            for( size_t i=0; i<81; i++ )
+            {
+                w[i] -> setvalue(sudokuvector[i/9][i%9]);
+            }
+        }
+        jame -> setvector(sudokuvector);
+        if(jame -> gyozelem(sudokuvector, "kezdo.txt"))
+        {
+            kilepes = true;
+        }
+        if(kilepes)
+        {
+            nyert;
+            kilep;
+            if(ev.pos_x>=175 && ev.pos_x<=335 && ev.pos_y>=225 && ev.pos_y<=285)
+            {
+                if(ev.button==btn_left)
+                {
+                    return 0;
+                }
+            }
+        }
         gout << refresh;
     }
 
     while(gin >> ev && ev.keycode != key_escape && indulas==2)
     {
         gout << move_to(0,0) << color(158,196,226) << box(width,height);
-        gout << move_to(230, 30) << color(0,0,0) << text("Kozepes");
+        gout << move_to(230,30) << color(0,0,0) << text("Kozepes");
         ellenorzes;
         if( ev.type == ev_mouse && ev.button==btn_left )
         {
@@ -626,7 +652,7 @@ int main()
         for( size_t i=81; i<162; i++ )
         {
             w[i]->draw();
-            //sudokuvector[(i-81)/9][(i-81)%9] = w[i] -> getvalue();
+            sudokuvector[(i-81)/9][(i-81)%9] = w[i] -> getvalue();
         }
 
         if(ev.button == btn_left && ev.pos_x>=400 && ev.pos_x<=500 && ev.pos_y>=470 && ev.pos_y<=500)
@@ -637,13 +663,24 @@ int main()
                 w[i] -> setvalue(sudokuvector[(i-81)/9][(i-81)%9]);
             }
         }
+
         jame -> setvector(sudokuvector);
         if(jame -> gyozelem(sudokuvector, "kozepes.txt"))
         {
+            kilepes = true;
+        }
+        if(kilepes)
+        {
             nyert;
             kilep;
+            if(ev.pos_x>=175 && ev.pos_x<=335 && ev.pos_y>=225 && ev.pos_y<=285)
+            {
+                if(ev.button==btn_left)
+                {
+                    return 0;
+                }
+            }
         }
-
         gout << refresh;
     }
 
@@ -671,10 +708,10 @@ int main()
         for( size_t i=162; i<243; i++ )
         {
             w[i]->draw();
-            //sudokuvector[(i-162)/9][(i-162)%9] = w[i] -> getvalue();
+            sudokuvector[(i-162)/9][(i-162)%9] = w[i] -> getvalue();
         }
-/*
-        if(ev.button == btn_right)
+
+        if(ev.button == btn_left && ev.pos_x>=400 && ev.pos_x<=500 && ev.pos_y>=470 && ev.pos_y<=500)
         {
             jame -> loadvector(sudokuvector, "nehez.txt");
             for( size_t i=162; i<243; i++ )
@@ -685,9 +722,21 @@ int main()
         jame -> setvector(sudokuvector);
         if(jame -> gyozelem(sudokuvector, "nehez.txt"))
         {
-            cout << "win";
+            kilepes = true;
         }
-*/
+        if(kilepes)
+        {
+            veszt;
+            kilep;
+            if(ev.pos_x>=175 && ev.pos_x<=335 && ev.pos_y>=225 && ev.pos_y<=285)
+            {
+                if(ev.button==btn_left)
+                {
+                    return 0;
+                }
+            }
+        }
+
         gout << refresh;
     }
     return 0;
